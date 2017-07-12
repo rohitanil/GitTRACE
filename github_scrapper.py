@@ -73,8 +73,8 @@ def gitScrape(s):
 
 def gitLanguages(user):
         
-        username="rohitanil"
-        password="transformers1234"
+        username="Insert username"
+        password="Insert password"
         #user = raw_input("Please enter the requested Github username: ")
 
         #Connect to github
