@@ -1,17 +1,17 @@
 import os
 import time
 from slackclient import SlackClient
-
+import github_scrapper
 
 # starterbot's ID as an environment variable
 BOT_ID ="Insert bot id"
 
 # constants
 AT_BOT = "<@" + BOT_ID + ">"
-EXAMPLE_COMMAND = "do"
+EXAMPLE_COMMAND = "github"
 
 # instantiate Slack clients
-slack_client = SlackClient('Insert Slack Token')
+slack_client = SlackClient('Insert Slack token')
 
 
 def handle_command(command, channel):
@@ -23,7 +23,10 @@ def handle_command(command, channel):
     response = "Not sure what you mean. Use the *" + EXAMPLE_COMMAND + \
                "* command with numbers, delimited by spaces."
     if command.startswith(EXAMPLE_COMMAND):
-        response = "Sure...write some more code then I can do that!"
+        request=command.split(' ',1)[1]
+        repos,followers,url,commits,langs=github_scrapper.gitScrape(request)
+        response=url+"\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits"+str(commits)+"\nLanguages:"+', '.join(langs)
+ 
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
 
@@ -47,7 +50,7 @@ def parse_slack_output(slack_rtm_output):
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
     if slack_client.rtm_connect():
-        print("StarterBot connected and running!")
+        print("GitBot connected and running!")
         while True:
             command, channel = parse_slack_output(slack_client.rtm_read())
             if command and channel:
