@@ -31,7 +31,7 @@ def count_repo_commits(commits_url, _acc=0):
     next_url = find_next(r.headers['link'])
     if next_url is None:
         return _acc + n
-    # try to be tail recursive, even when it doesn't matter in CPython
+    
     return count_repo_commits(next_url, _acc + n)
 
 
