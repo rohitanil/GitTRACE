@@ -1,18 +1,17 @@
 from pygithub3 import Github
 from urllib2 import urlopen
 import json
-repo=[]
-c=[]
-import re
 import requests
+repo=[]
 
 def langPercent(user, languages):
     
     link1=["https://api.github.com/users/"]
-    str1= user
+    str1=user
     str2="/repos"
     link1.append(str1)
     link1.append(str2)
+    link1.append("?client_id=<"INSERT CLIENT ID">&client_secret=<"INSERT CLIENT SECRET TOKEN">")
     x="".join(link1)
     req=urlopen(x).read()
     data=json.loads(req)
@@ -25,10 +24,12 @@ def langPercent(user, languages):
         link2=["https://api.github.com/repos/"]
         link2.append(repo[i])
         link2.append("/languages")
+        link2.append("?client_id=<"INSERT CLIENT ID">&client_secret=<"INSERT CLIENT SECRET TOKEN">")
         y="".join(link2)
         req=urlopen(y).read()
         data=json.loads(req)
         print data
-if __name__="__main__":
+        
+if __name__=="__main__":
     langPercent("rohitanil",0)
 
