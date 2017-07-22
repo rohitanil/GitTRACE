@@ -3,8 +3,11 @@ from urllib2 import urlopen
 import json
 repo=[]
 c=[]
+p=[]
 final_byte_count={}
 final_list={}
+weekly_commits={}
+weekly_commits_list=[]
 final_percent_list=[]
 other=[]
 import re
@@ -23,11 +26,27 @@ def langPercent(user, languages):
     data=json.loads(req)
     for i in range(0,len(data)):
         repo.append(str(data[i]["full_name"]))
-               
+    commits_prediction(str1,repo)                  
     #print repo
 
-    for i in range(0,len(repo)):
+    """for i in range(0,len(repo)):
         link2=["https://api.github.com/repos/"]
+        link3=link2
+        link3.append(repo[i])
+        link3.append('/stats/contributors?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41')
+        link3="".join(link3)
+        #print link3
+        req1=urlopen(link3).read()
+        data=json.loads(req1)
+        print data
+        for j in range(0,len(data)):
+            
+            
+            if(data[j]['author']["login"]==user):
+                p.append(data[j]["weeks"])
+        
+        ###Function call to predict commits
+        
         link2.append(repo[i])
         link2.append("/languages")
         link2.append("?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41")
@@ -35,6 +54,7 @@ def langPercent(user, languages):
         req=urlopen(y).read()
         data=json.loads(req)
         c.append(data)
+    print p
     #print c
     ###Add bytes of code of same language
     from collections import Counter
@@ -61,6 +81,30 @@ def langPercent(user, languages):
         percentage=(float(value)/denom*1.0)*100.0
         #print percentage
         final_percent_list=(str(key),str(round(percentage)))
-    return final_percent_list,list(set(other))
+    return final_percent_list,list(set(other))"""
+
+def commits_prediction(user,repo):
+    print len(repo),user
+    for i in range(0,len(repo)):
+        
+        link3=["https://api.github.com/repos/"]
+        link3.append(repo[i])
+        link3.append('/stats/contributors?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41')
+        link3="".join(link3)
+        print link3
+        req1=urlopen(link3).read()
+        data=json.loads(req1)
+        for j in range(0,len(data)):
+            if(data[j]['author']['login']==user):
+                for z in range(0,len(data[j]['weeks'])):
+                    hash1=data[j]['weeks'][z]['w']
+                    weekly_commits[hash1]=data[j]['weeks'][z]['c']
+        print weekly_commits
+        print "\n\n"
+                
+    
+if __name__=='__main__':
+    langPercent('rohitanil','0')
+    
 
 
