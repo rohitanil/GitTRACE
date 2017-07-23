@@ -2,13 +2,14 @@ from pygithub3 import Github
 from urllib2 import urlopen
 import json
 from collections import Counter
+import LRM
 repo=[]
 c=[]
 p=[]
 week_list=[]
 commitcount_list=[]
-
-
+dates=[]
+commits=[]
 final_byte_count={}
 final_list={}
 final_commit_count={}
@@ -107,3 +108,27 @@ def commits_prediction(user,repo):
         commitcount_list.append(final_commit_count[key])
     #print sorted(final_commit_count.iterkeys())
     print commitcount_list
+    for i in range(0,len(commitcount_list)):
+        dates.insert(i,i)
+    sum1=0
+    for i in range(0,len(commitcount_list)):
+        #print commitcount_list[i]
+        sum1+=commitcount_list[i]
+        commits.insert(i,sum1)
+    print dates
+    print commits
+    LRM.show_plot(dates,commits)
+    predicted_commits, coefficient, constant = LRM.predict_commits(dates,commits,100)
+    print "Commits after 100th week is: ",str(predicted_commits)
+    print "The regression coefficient is ",str(coefficient),", and the constant is ", str(constant)
+    print "the relationship equation between weeks and commits is: commits = ",str(coefficient),"* date + ",str(constant)
+
+
+ 
+
+
+if __name__=='__main__':
+    langPercent('rohitanil','0')
+    
+
+
