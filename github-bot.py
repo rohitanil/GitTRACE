@@ -24,9 +24,11 @@ def handle_command(command, channel):
                "* command with numbers, delimited by spaces."
     if command.startswith(EXAMPLE_COMMAND):
         request=command.split(' ',1)[1]
-        repos,followers,url,commits,langs=github_scrapper.gitScrape(request)
-        response=url+"\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits"+str(commits)+"\nLanguages:"+', '.join(langs)
- 
+        msg1,repos,followers,url,commits,langs,others=github_scrapper.gitScrape(request)
+        if(msg1==1):
+            response=url+"\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits:"+str(commits)+"\nTop Language Proficiency:"+', '.join(langs)+"\nOther Technologies:"+', '.join(others)
+        else:
+             response=msg1
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
 
