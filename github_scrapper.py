@@ -1,13 +1,15 @@
 from pygithub3 import Github
+import urllib2
 from urllib2 import urlopen
 import json
 req=[]
 import re
 import requests
+from requests.exceptions import HTTPError
 import github_repo
 
 def count_user_commits(user):
-    r = requests.get('https://api.github.com/users/%s/repos?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41' % user)
+    r = requests.get('https://api.github.com/users/%s/repos?client_id="INSERT CLIENT ID"&client_secret="INSERT CLIENT SECRET TOKEN"' % user)
     repos = json.loads(r.content)
 
     for repo in repos:
@@ -31,7 +33,7 @@ def count_repo_commits(commits_url, _acc=0):
     next_url = find_next(r.headers['link'])
     if next_url is None:
         return _acc + n
-    # try to be tail recursive, even when it doesn't matter in CPython
+    
     return count_repo_commits(next_url, _acc + n)
 
 
@@ -53,32 +55,34 @@ def commits(user):
     return total_commits    
 
 def gitScrape(s):
-
-        #if re.findall(r'[\w]+.github.com/(\w+)',s):
-            
-            #cont=re.findall(r'[\w]+.github.com/(\w+)',"www.github.com/au-revoir")
-            cont=s
-            print(cont)
-            str1="".join(cont)
-            print(str1)
-            gitlang2=gitLanguages(str1)
-            totalCommits=commits(str1)
-            language_percent,other_skills=github_repo.langPercent(str1,gitlang2)
+        
+        
             link=["https://api.github.com/users/"]
-            link.append(str1)
-            link.append("?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41")
+            link.append(s)
+            link.append("?client_id="INSERT CLIENT ID"&client_secret="INSERT CLIENT SECRET TOKEN"")
             x="".join(link)
-            req=urlopen(x).read()
-            data=json.loads(req)
-            return(data['public_repos'],data['followers'],data['html_url'],totalCommits,language_percent,other_skills)
-        #else:
-                #return 0,0,0,0,0,0              
+            try:
+                
+                req=urlopen(x).read()
+                data=json.loads(req)
+                str1=s
+                print(str1)
+                if (data["type"]=='User'):
+                    #print(str1)
+                    gitlang2=gitLanguages(str1)
+                    totalCommits=commits(str1)
+                    language_percent,other_skills=github_repo.langPercent(str1,gitlang2)
+                    return(1,data['public_repos'],data['followers'],data['html_url'],totalCommits,language_percent,other_skills)
+                else:
+                    return 'Account type is not User',0,0,0,0,0,0
+            except urllib2.HTTPError,e:
+                return 'User not found!',0,0,0,0,0,0              
 
 
 def gitLanguages(user):
         
-        username="Insert Username"
-        password="Insert Password"
+        username="INSERT USERNAME"
+        password="INSERT PASSWORD"
         #user = raw_input("Please enter the requested Github username: ")
 
         #Connect to github
