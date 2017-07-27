@@ -4,15 +4,14 @@ from slackclient import SlackClient
 import github_scrapper
 
 # starterbot's ID as an environment variable
-BOT_ID ="Insert bot id"
+BOT_ID ="Insert Bot ID"
 
 # constants
 AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "github"
 
 # instantiate Slack clients
-slack_client = SlackClient('Insert Slack token')
-
+slack_client = SlackClient('Insert Slack Client Token')
 
 def handle_command(command, channel):
     """
@@ -24,13 +23,70 @@ def handle_command(command, channel):
                "* command with numbers, delimited by spaces."
     if command.startswith(EXAMPLE_COMMAND):
         request=command.split(' ',1)[1]
-        msg1,repos,followers,url,commits,langs,others=github_scrapper.gitScrape(request)
+        msg1,repos,followers,url,commits,langs,others,pred=github_scrapper.gitScrape(request)
+        "Converting dictionary returned to string"
+        
         if(msg1==1):
-            response=url+"\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits:"+str(commits)+"\nTop Language Proficiency:"+', '.join(langs)+"\nOther Technologies:"+', '.join(others)
+            y=", ".join([": ".join([key, str(val)]) for key, val in langs.items()])
+            #response2="\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits:"+str(commits)+"\nTop Language Proficiency:"+y+"\nOther Technologies:"+', '.join(others)+"\nCommits Prediction(100th week):"+str(pred)  
+            attachments=attachments=[
+                {
+                    "color": "#36a64f",
+                    "author_name": request,
+                    "text":" " ,
+                    "fields": [
+                        {
+                            "title": "Repositories",
+                            "value": str(repos),
+                            "short": "false"
+                        },
+                        {
+                            "title": "Followers",
+                            "value": str(followers),
+                            "short": "false"
+                        },
+                        {
+                            "title": "Commits",
+                            "value": str(commits),
+                            "short": "false"
+                        },
+                        {
+                            "title": "Top Technologies",
+                            "value": y,
+                            "short": "false"
+                        },
+                        {
+                            "title": "Other Technologies",
+                            "value": ', '.join(others),
+                            "short": "false"
+                        },
+                        {
+                            "title": "Commits Prediction(100th week)",
+                            "value": str(pred),
+                            "short": "false"
+                        },],
+                    "thumb_url": "http://example.com/path/to/thumb.png"
+            
+             }]
+            slack_client.api_call("chat.postMessage", channel=channel,
+                          text=url,attachments=attachments, as_user=True)
+
         else:
              response=msg1
-    slack_client.api_call("chat.postMessage", channel=channel,
-                          text=response, as_user=True)
+             attachments=attachments= [
+                 {
+                     "text": " ",
+                     "fields": [
+                         {
+                             "title": "Error",
+                             "value": response,
+                             "short": "true"
+                             }
+                         ],
+                     "color": "#F35A00"
+                     }]
+             slack_client.api_call("chat.postMessage", channel=channel,
+                          attachments=attachments, as_user=True)
 
 
 def parse_slack_output(slack_rtm_output):
