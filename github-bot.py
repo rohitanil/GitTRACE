@@ -106,13 +106,24 @@ def parse_slack_output(slack_rtm_output):
 
 
 if __name__ == "__main__":
-    READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+    #reload(sys)
+    #sys.setdefaultencoding('utf-8')
+    READ_WEBSOCKET_DELAY = 1
     if slack_client.rtm_connect():
         print("GitBot connected and running!")
         while True:
-            command, channel = parse_slack_output(slack_client.rtm_read())
-            if command and channel:
-                handle_command(command, channel)
-            time.sleep(READ_WEBSOCKET_DELAY)
+            try:
+                command, channel = parse_slack_output(slack_client.rtm_read())
+                if command and channel:
+                    handle_command(command, channel)
+                time.sleep(READ_WEBSOCKET_DELAY)
+            except WebSocketConnectionClosedException as e:
+                print e
+                print 'Caught websocket disconnect, reconnecting...'
+                time.sleep(READ_WEBSOCKET_DELAY)
+                slack_client.rtm_connect()
+            except Exception, e:
+                print e
+                time.sleep(READ_WEBSOCKET_DELAY)
     else:
         print("Connection failed. Invalid Slack token or bot ID?")
