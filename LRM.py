@@ -10,9 +10,9 @@ def show_plot(dates,commits):
 	dates = np.reshape(dates,(len(dates),1)) # converting to matrix of n X 1
 	commits = np.reshape(commits,(len(commits),1))
 	linear_mod.fit(dates,commits) #fitting the data points in the model
-	plt.scatter(dates,commits,color='yellow') #plotting the initial datapoints 
+	"""plt.scatter(dates,commits,color='yellow') #plotting the initial datapoints 
 	plt.plot(dates,linear_mod.predict(dates),color='blue',linewidth=1) #plotting the line made by linear regression
-	plt.show()
+	plt.show()"""
 	return
 
 def predict_commits(dates,commits,x):
