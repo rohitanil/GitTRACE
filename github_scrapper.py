@@ -9,7 +9,7 @@ from requests.exceptions import HTTPError
 import github_repo
 
 def count_user_commits(user):
-    r = requests.get('https://api.github.com/users/%s/repos?client_id="INSERT CLIENT ID"&client_secret="INSERT CLIENT SECRET TOKEN"' % user)
+    r = requests.get('https://api.github.com/users/%s/repos?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41' % user)
     repos = json.loads(r.content)
 
     for repo in repos:
@@ -33,7 +33,7 @@ def count_repo_commits(commits_url, _acc=0):
     next_url = find_next(r.headers['link'])
     if next_url is None:
         return _acc + n
-    
+    # try to be tail recursive, even when it doesn't matter in CPython
     return count_repo_commits(next_url, _acc + n)
 
 
@@ -59,30 +59,29 @@ def gitScrape(s):
         
             link=["https://api.github.com/users/"]
             link.append(s)
-            link.append("?client_id="INSERT CLIENT ID"&client_secret="INSERT CLIENT SECRET TOKEN"")
+            link.append("?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41")
             x="".join(link)
             try:
                 
                 req=urlopen(x).read()
                 data=json.loads(req)
-                str1=s
-                print(str1)
                 if (data["type"]=='User'):
-                    #print(str1)
+                    str1=data["login"]
+                    print(str1)
                     gitlang2=gitLanguages(str1)
-                    totalCommits=commits(str1)
-                    language_percent,other_skills=github_repo.langPercent(str1,gitlang2)
-                    return(1,data['public_repos'],data['followers'],data['html_url'],totalCommits,language_percent,other_skills)
+                    #totalCommits=commits(str1)
+                    language_percent,other_skills,prediction,totalCommits=github_repo.langPercent(str1,gitlang2)
+                    return(1,data['public_repos'],data['followers'],data['html_url'],totalCommits,language_percent,other_skills,prediction)
                 else:
-                    return 'Account type is not User',0,0,0,0,0,0
+                    return 'Account type is not User',0,0,0,0,0,0,0
             except urllib2.HTTPError,e:
-                return 'User not found!',0,0,0,0,0,0              
+                return 'User not found!',0,0,0,0,0,0,0              
 
 
 def gitLanguages(user):
         
-        username="INSERT USERNAME"
-        password="INSERT PASSWORD"
+        username="rohitanil"
+        password="continuum1"
         #user = raw_input("Please enter the requested Github username: ")
 
         #Connect to github
