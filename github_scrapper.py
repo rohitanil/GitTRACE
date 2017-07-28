@@ -52,7 +52,23 @@ def commits(user):
         #print "Repo `%(name)s` has %(num_commits)d commits, size %(size)d." % repo
         total_commits += repo['num_commits']
     #print "Total commits: %d" % total_commits
-    return total_commits    
+    return total_commits
+
+def get_Repo(user):
+    repo=[]
+    link1=["https://api.github.com/users/"]
+    str2=user
+    str3="/repos"
+    link1.append(str2)
+    link1.append(str3)
+    link1.append("?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41")
+    x="".join(link1)
+    req=urlopen(x).read()
+    data=json.loads(req)
+    for i in range(0,len(data)):
+        repo.append(str(data[i]["full_name"]))
+    print repo
+    return repo
 
 def gitScrape(s):
         
@@ -70,7 +86,9 @@ def gitScrape(s):
                     print(str1)
                     gitlang2=gitLanguages(str1)
                     #totalCommits=commits(str1)
-                    language_percent,other_skills,prediction,totalCommits=github_repo.langPercent(str1,gitlang2)
+                    repo1=get_Repo(str1)
+                    print repo1
+                    language_percent,other_skills,prediction,totalCommits=github_repo.langPercent(str1,gitlang2,repo1)
                     return(1,data['public_repos'],data['followers'],data['html_url'],totalCommits,language_percent,other_skills,prediction)
                 else:
                     return 'Account type is not User',0,0,0,0,0,0,0
@@ -102,6 +120,7 @@ def gitLanguages(user):
         #print gitlang
         gitlang=list(set(gitlang))
         return gitlang
+
         
 
 
