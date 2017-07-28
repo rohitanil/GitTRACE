@@ -7,14 +7,14 @@ p=[]
 import re
 import requests
 
-def langPercent(user, languages):
-    repo=[]
+def langPercent(user, languages,repo):
+    
     c=[]
     final_byte_count={}
     final_list={}
     final_percent_list={}
     other=[]
-    link1=["https://api.github.com/users/"]
+    """link1=["https://api.github.com/users/"]
     str1=user
     str2="/repos"
     link1.append(str1)
@@ -25,7 +25,7 @@ def langPercent(user, languages):
     data=json.loads(req)
     for i in range(0,len(data)):
         repo.append(str(data[i]["full_name"]))
-    print repo
+    print repo"""
                       
     
     try:
@@ -40,8 +40,8 @@ def langPercent(user, languages):
             c.append(data)
     except ValueError,e:
         print e
-    pred_commits,indi_commits=commits_prediction(str1,repo)
-    print c
+    pred_commits,indi_commits=commits_prediction(user,repo)
+    #print c
     ###Add bytes of code of same language
     
     counter=Counter()
@@ -56,7 +56,7 @@ def langPercent(user, languages):
             if(i==key):
                 final_list[key]=value
             else:
-                print key
+                #print key
                 other.append(key)
         
     #print final_list
@@ -102,6 +102,9 @@ def commits_prediction(user,repo):
                         #print weekly_commits
                         #print "\n\n"
                         week_list.append(weekly_commits)
+            else:
+                print repo[i]
+                print "kereela"
             
         except ValueError,e:
             #print repo[i]
@@ -109,7 +112,7 @@ def commits_prediction(user,repo):
             #print e
             continue
             
-    print week_list
+    #print week_list
     ###Add same week hash commits, sort commits based on week hash and add commits to seperate list
     if(week_list):
         
@@ -135,15 +138,15 @@ def commits_prediction(user,repo):
         print commits[i]
         LRM.show_plot(dates,commits)
         predicted_commits, coefficient, constant = LRM.predict_commits(dates,commits,100)
-        print "Commits Prediction: ",int(predicted_commits)
+        #print "Commits Prediction: ",int(predicted_commits)
         #print "The regression coefficient is ",str(coefficient),", and the constant is ", str(constant)
         #print "the relationship equation between weeks and commits is: commits = ",str(coefficient),"* date + ",str(constant)
         return int(predicted_commits),commits[i]
     else:
         return 0,0
          
-"""if __name__=='__main__':
-    langPercent('Srikant14','0')"""
+if __name__=='__main__':
+    langPercent('rohitanil','0')
     
 
 
