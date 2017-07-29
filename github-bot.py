@@ -23,7 +23,7 @@ def handle_command(command, channel):
         returns back what it needs for clarification.
     """
     response = "Not sure what you mean. Use the *" + EXAMPLE_COMMAND + \
-               "* command with username"
+               "* command with username (@gitbot github <username>)"
     if command.startswith(EXAMPLE_COMMAND):
         request=command.split(' ',1)[1]
         msg1,repos,followers,url,commits,langs,others,pred,contri=github_scrapper.gitScrape(request)
@@ -97,8 +97,8 @@ def handle_command(command, channel):
                      }]
              slack_client.api_call("chat.postMessage", channel=channel,
                           attachments=attachments, as_user=True)
-             
-    slack_client.api_call("chat.postMessage", channel=channel,text=response, as_user=True)
+    else:
+        slack_client.api_call("chat.postMessage", channel=channel,text=response, as_user=True)
 
 def parse_slack_output(slack_rtm_output):
     """
