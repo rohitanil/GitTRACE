@@ -20,7 +20,7 @@ def contrib(item):
 
 	x="".join(new)
 	z=re.findall(r'\d+', x)
-	print(z[3])
+	return z[3]
 
 #name="cypherix"
 contrib(name) #pass the profile name as parameter
