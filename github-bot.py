@@ -14,7 +14,7 @@ AT_BOT = "<@" + BOT_ID + ">"
 EXAMPLE_COMMAND = "github"
 
 # instantiate Slack clients
-slack_client = SlackClient('Insert Slack Client Token')
+slack_client = SlackClient('Insert Slack Token')
 
 def handle_command(command, channel):
     """
@@ -23,7 +23,7 @@ def handle_command(command, channel):
         returns back what it needs for clarification.
     """
     response = "Not sure what you mean. Use the *" + EXAMPLE_COMMAND + \
-               "* command with numbers, delimited by spaces."
+               "* command with username"
     if command.startswith(EXAMPLE_COMMAND):
         request=command.split(' ',1)[1]
         msg1,repos,followers,url,commits,langs,others,pred,contri=github_scrapper.gitScrape(request)
@@ -31,7 +31,9 @@ def handle_command(command, channel):
         
         if(msg1==1):
             y=langs
-            z=", ".join(others)  
+            z=", ".join(others)
+            #y=", ".join([": ".join([key, str(val)]) for key, val in langs.items()])
+            #response2="\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits:"+str(commits)+"\nTop Language Proficiency:"+y+"\nOther Technologies:"+', '.join(others)+"\nCommits Prediction(100th week):"+str(pred)  
             attachments=attachments=[
                 {
                     "color": "#36a64f",
@@ -95,7 +97,8 @@ def handle_command(command, channel):
                      }]
              slack_client.api_call("chat.postMessage", channel=channel,
                           attachments=attachments, as_user=True)
-
+             
+    slack_client.api_call("chat.postMessage", channel=channel,text=response, as_user=True)
 
 def parse_slack_output(slack_rtm_output):
     """
@@ -113,6 +116,8 @@ def parse_slack_output(slack_rtm_output):
     return None, None
 
 if __name__ == "__main__":
+    #reload(sys)
+    #sys.setdefaultencoding('utf-8')
     READ_WEBSOCKET_DELAY = 1
     if slack_client.rtm_connect():
         print("GitBot connected and running!")
