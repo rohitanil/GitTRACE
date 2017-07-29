@@ -15,7 +15,7 @@ def pred(l=[], *args):
 
 	model_fit = model.fit(disp=1) #model is prepared on the training data
 
-	output = model_fit.forecast(25)
+	output = model_fit.forecast(25) #forcast for the next 25 weeks
 
 	#print(output[0])
 
@@ -30,4 +30,4 @@ def pred(l=[], *args):
 
 #train=np.array([4, 16, 22, 32, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36, 36, 44, 47, 47], dtype=np.float)
 
-pred(train)  #passing a list containing commits history as parameter
+#pred(train)  #passing a list containing commits history as parameter
