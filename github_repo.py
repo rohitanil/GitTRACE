@@ -15,6 +15,8 @@ def langPercent(user, languages,repo):
     final_list={}
     final_percent_list={}
     other=[]
+    x1=''
+    y1=''
     """link1=["https://api.github.com/users/"]
     str1=user
     str2="/repos"
@@ -78,7 +80,7 @@ def langPercent(user, languages,repo):
         c1=max(final_percent_list.iteritems(), key=operator.itemgetter(1))
         x1=c1[0]
         y1=str(c1[1])
-    return x1+": "+y1,list(set(other)),pred_commits,indi_commits
+    return x1+"- "+y1,list(set(other)),pred_commits,indi_commits
     
 
 def commits_prediction(user,repo):
@@ -173,5 +175,6 @@ def commits_prediction(user,repo):
         return 0,0
          
 
+    
 
 
