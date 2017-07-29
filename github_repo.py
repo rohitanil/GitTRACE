@@ -1,20 +1,21 @@
 from pygithub3 import Github
 from urllib2 import urlopen
 import json
+import operator
 from collections import Counter
 import LRM
 p=[]
 import re
 import requests
 
-def langPercent(user, languages):
-    repo=[]
+def langPercent(user, languages,repo):
+    
     c=[]
     final_byte_count={}
     final_list={}
     final_percent_list={}
     other=[]
-    link1=["https://api.github.com/users/"]
+    """link1=["https://api.github.com/users/"]
     str1=user
     str2="/repos"
     link1.append(str1)
@@ -25,7 +26,7 @@ def langPercent(user, languages):
     data=json.loads(req)
     for i in range(0,len(data)):
         repo.append(str(data[i]["full_name"]))
-    print repo
+    print repo"""
                       
     
     try:
@@ -40,8 +41,8 @@ def langPercent(user, languages):
             c.append(data)
     except ValueError,e:
         print e
-    pred_commits,indi_commits=commits_prediction(str1,repo)
-    print c
+    pred_commits,indi_commits=commits_prediction(user,repo)
+    #print c
     ###Add bytes of code of same language
     
     counter=Counter()
@@ -56,7 +57,7 @@ def langPercent(user, languages):
             if(i==key):
                 final_list[key]=value
             else:
-                print key
+                #print key
                 other.append(key)
         
     #print final_list
@@ -68,10 +69,16 @@ def langPercent(user, languages):
         k=[]
         percentage=(float(value)/denom*1.0)*100.0
         #print percentage
-        final_percent_list[str(key)]=str(round(percentage))
+        final_percent_list[key]=round(percentage)
         
     print final_percent_list
-    return final_percent_list,list(set(other)),pred_commits,indi_commits
+    'Find language with highest percentage'
+    if(final_percent_list):
+        
+        c1=max(final_percent_list.iteritems(), key=operator.itemgetter(1))
+        x1=c1[0]
+        y1=str(c1[1])
+    return x1+": "+y1,list(set(other)),pred_commits,indi_commits
     
 
 def commits_prediction(user,repo):
@@ -87,16 +94,39 @@ def commits_prediction(user,repo):
         link3.append(repo[i])
         link3.append('/stats/contributors?client_id=3553ff878aa2222e9bfc&client_secret=28f4870866e637170fffa9031d89567ae9378b41')
         link3="".join(link3)
-        print link3
+        #print link3
         """ Check if a repo is empty or not"""
-        try:
+        """try:
             req1=urlopen(link3).read()
             data=json.loads(req1)
             if(data):
+                
                 for j in range(0,len(data)):
                     if(data[j]['author']['login']==user):
                         for z in range(0,len(data[j]['weeks'])):
                             
+                            hash1=data[j]['weeks'][z]['w']
+                            weekly_commits[hash1]=data[j]['weeks'][z]['c']
+                        #print weekly_commits
+                        #print "\n\n"
+                        week_list.append(weekly_commits)
+            else:
+                print repo[i]
+                print kereela"""
+            
+        try:
+            cou=0
+            data=[]
+            'Retry getting data from repo[i] if data returned is empty'
+            while(not data and cou!=5):
+                req1=urlopen(link3).read()
+                data=json.loads(req1)
+                cou=cou+1
+                print cou
+            if(data):
+                for j in range(0,len(data)):
+                    if(data[j]['author']['login']==user):
+                        for z in range(0,len(data[j]['weeks'])):
                             hash1=data[j]['weeks'][z]['w']
                             weekly_commits[hash1]=data[j]['weeks'][z]['c']
                         #print weekly_commits
@@ -109,7 +139,7 @@ def commits_prediction(user,repo):
             #print e
             continue
             
-    print week_list
+    #print week_list
     ###Add same week hash commits, sort commits based on week hash and add commits to seperate list
     if(week_list):
         
@@ -135,15 +165,13 @@ def commits_prediction(user,repo):
         print commits[i]
         LRM.show_plot(dates,commits)
         predicted_commits, coefficient, constant = LRM.predict_commits(dates,commits,100)
-        print "Commits Prediction: ",int(predicted_commits)
+        #print "Commits Prediction: ",int(predicted_commits)
         #print "The regression coefficient is ",str(coefficient),", and the constant is ", str(constant)
         #print "the relationship equation between weeks and commits is: commits = ",str(coefficient),"* date + ",str(constant)
         return int(predicted_commits),commits[i]
     else:
         return 0,0
          
-"""if __name__=='__main__':
-    langPercent('Srikant14','0')"""
-    
+
 
 
