@@ -1,7 +1,10 @@
 import os
+import sys
 import time
 from slackclient import SlackClient
 import github_scrapper
+import requests
+from websocket import WebSocketConnectionClosedException
 
 # starterbot's ID as an environment variable
 BOT_ID ="Insert Bot ID"
@@ -23,12 +26,12 @@ def handle_command(command, channel):
                "* command with numbers, delimited by spaces."
     if command.startswith(EXAMPLE_COMMAND):
         request=command.split(' ',1)[1]
-        msg1,repos,followers,url,commits,langs,others,pred=github_scrapper.gitScrape(request)
+        msg1,repos,followers,url,commits,langs,others,pred,contri=github_scrapper.gitScrape(request)
         "Converting dictionary returned to string"
         
         if(msg1==1):
-            y=", ".join([": ".join([key, str(val)]) for key, val in langs.items()])
-            #response2="\nRepositories:"+str(repos)+"\nFollowers:"+str(followers)+"\nCommits:"+str(commits)+"\nTop Language Proficiency:"+y+"\nOther Technologies:"+', '.join(others)+"\nCommits Prediction(100th week):"+str(pred)  
+            y=langs
+            z=", ".join(others)  
             attachments=attachments=[
                 {
                     "color": "#36a64f",
@@ -51,13 +54,18 @@ def handle_command(command, channel):
                             "short": "false"
                         },
                         {
-                            "title": "Top Technologies",
+                            "title": "Top Technology",
                             "value": y,
                             "short": "false"
                         },
                         {
                             "title": "Other Technologies",
-                            "value": ', '.join(others),
+                            "value": z,
+                            "short": "false"
+                        },
+                        {
+                            "title": "Contributions",
+                            "value": contri,
                             "short": "false"
                         },
                         {
@@ -104,10 +112,7 @@ def parse_slack_output(slack_rtm_output):
                        output['channel']
     return None, None
 
-
 if __name__ == "__main__":
-    #reload(sys)
-    #sys.setdefaultencoding('utf-8')
     READ_WEBSOCKET_DELAY = 1
     if slack_client.rtm_connect():
         print("GitBot connected and running!")
